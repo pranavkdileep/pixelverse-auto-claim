@@ -1,6 +1,8 @@
 const express = require('express');
 
 const app = express();
+const telegramBotToken = "6846260168:AAGuSGtoqRfuYhhtvZ11xoacx2nyKI2ixN0";
+const telegramChatId = "1196575861";
 
 const getResponce = async () => {
     const res = await fetch("https://api-clicker.pixelverse.xyz/api/mining/claim", {
@@ -26,7 +28,32 @@ const getResponce = async () => {
         "credentials": "omit"
       });
     const data = await res.json();
+    if(data.claimedAmount){
+        sendTelegramMessage('Claimed: ' + data.claimedAmount);
+    }
     return data;
+}
+async function sendTelegramMessage(message) {
+    try {
+        const response = await fetch("https://api.telegram.org/bot" + telegramBotToken + "/sendMessage", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                chat_id: telegramChatId,
+                text: message
+            })
+        });
+
+        const data = await response.json();
+        messageId = data.result.message_id; 
+        console.log(messageId); // Printing the response data
+
+    } catch (error) {
+        //console.error('Error sending telegram message:', error);
+        //sendTelegramMessage('Error sending telegram message: ' + error);    
+    }
 }
 
 
